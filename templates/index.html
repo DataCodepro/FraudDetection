@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Fraud Detection System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a7c);
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 0;
+        }
+        
+        .nav-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-brand i {
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-user {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .user-badge.admin {
+            background: #ff9800;
+        }
+        
+        .user-badge.user {
+            background: #4CAF50;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a7c);
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .admin-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .admin-panel h3 {
+            color: #ff9800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-panel h3 i {
+            margin-right: 10px;
+        }
+        
+        .user-management {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .transaction-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .users-table th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .users-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .status-toggle {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .status-toggle.inactive {
+            background: #f44336;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .stat-fraud {
+            color: #f44336;
+        }
+        
+        .stat-safe {
+            color: #4CAF50;
+        }
+        
+        .stat-total {
+            color: #2a3a7c;
+        }
+        
+        .stat-pending {
+            color: #ff9800;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #2a3a7c;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2 i {
+            margin-right: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a7c);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #2a3a7c, #3a4a8c);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-large {
+            padding: 15px 25px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-large i {
+            margin-right: 10px;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e53935, #f44336);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #f44336, #e53935);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #43A047, #4CAF50);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #4CAF50, #43A047);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #ff5722, #ff9800);
+        }
+        
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .transactions-table th {
+            background-color: #2a3a7c;
+            color: white;
+            text-align: left;
+            padding: 12px 15px;
+        }
+        
+        .transactions-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .transactions-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .transactions-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .fraud-badge {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .safe-badge {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .pending-transactions {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3e0;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .pending-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .pending-count {
+            background-color: #ff9800;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .transaction-details {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .transaction-details h3 {
+            margin-bottom: 15px;
+            color: #2a3a7c;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .fraud-reason {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            border-radius: 4px;
+        }
+        
+        .safe-reason {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .notification.warning {
+            background-color: #ff9800;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .transaction-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/dashboard" class="nav-brand">
+                <i class="fas fa-shield-alt"></i>
+                Fraud Detection System
+            </a>
+            <div class="nav-links">
+                <div class="nav-user">
+                    <span id="userWelcome">Welcome, </span>
+                    <span class="user-badge" id="userRole">User</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="notification" id="notification"></div>
+    
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt"></i> Real-Time Fraud Detection System</h1>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>System Active - Monitoring Transactions</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Admin Panel (Only visible to admins) -->
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <h3><i class="fas fa-users-cog"></i> User Management</h3>
+            <div class="user-management">
+                <h4>Create New User</h4>
+                <div class="transaction-form">
+                    <div class="form-group">
+                        <label for="newUsername">Username</label>
+                        <input type="text" id="newUsername" class="form-control" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmail">Email</label>
+                        <input type="email" id="newEmail" class="form-control" placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">Password</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="Enter password">
+                    </div>
+                    <div class="form-group">
+                        <label for="newRole">Role</label>
+                        <select id="newRole" class="form-control">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-success" id="createUserBtn">
+                    <i class="fas fa-user-plus"></i> Create User
+                </button>
+                
+                <h4 style="margin-top: 30px;">Existing Users</h4>
+                <table class="users-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody">
+                        <!-- Users will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value stat-total" id="total-transactions">0</div>
+                <div class="stat-label">Total Transactions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value stat-safe" id="safe-transactions">0</div>
+                <div class="stat-label">Safe Transactions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value stat-fraud" id="fraud-transactions">0</div>
+                <div class="stat-label">Fraudulent Transactions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value stat-pending" id="pending-transactions">0</div>
+                <div class="stat-label">Pending Analysis</div>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h2><i class="fas fa-exchange-alt"></i> Transaction Check</h2>
+                
+                <div class="pending-transactions" id="pending-section" style="display: none;">
+                    <div class="pending-header">
+                        <strong>Pending Transactions</strong>
+                        <span class="pending-count" id="pending-count">0</span>
+                    </div>
+                    <p id="pending-list">No pending transactions</p>
+                </div>
+                
+                <button class="btn btn-large" id="check-transaction">
+                    <i class="fas fa-search"></i> Check All Pending Transactions
+                </button>
+                <button class="btn btn-large btn-success" id="generate-transaction">
+                    <i class="fas fa-random"></i> Generate Random Transaction
+                </button>
+                <button class="btn btn-large btn-warning" id="train-model">
+                    <i class="fas fa-brain"></i> Train Model
+                </button>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-history"></i> Recently Checked Transactions</h2>
+                <div class="transaction-details" id="transaction-result">
+                    <h3>Transaction Analysis Result</h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Transaction ID:</span> <span id="result-id">TRX-2025-0011</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Amount:</span> <span id="result-amount">$450.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Category:</span> <span id="result-category">Electronics</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Location:</span> <span id="result-location">Chicago, US</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Device:</span> <span id="result-device">Desktop Web</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status:</span> <span id="result-status" class="fraud-badge">FRAUD</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Fraud Probability:</span> <span id="result-probability">0.89</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Confidence:</span> <span id="result-confidence">96.2%</span>
+                        </div>
+                    </div>
+                    <div class="fraud-reason" id="result-reason">
+                        <strong>Reason:</strong> Unusual purchase pattern and high amount for this user category.
+                    </div>
+                </div>
+                
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Amount</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Device</th>
+                            <th>Fraud Score</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body">
+                        <!-- Transactions will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                
+                <button class="btn btn-large" id="download-report">
+                    <i class="fas fa-download"></i> Download Report
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Real-Time Fraud Detection System &copy; 2025 | Monitoring transactions for suspicious activity</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        const AUTH_BASE_URL = 'http://localhost:5000/auth';
+        
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            
+            const checkTransactionBtn = document.getElementById('check-transaction');
+            const generateTransactionBtn = document.getElementById('generate-transaction');
+            const trainModelBtn = document.getElementById('train-model');
+            const downloadReportBtn = document.getElementById('download-report');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const createUserBtn = document.getElementById('createUserBtn');
+            
+            // Event listeners
+            checkTransactionBtn.addEventListener('click', checkAllPendingTransactions);
+            generateTransactionBtn.addEventListener('click', generateRandomTransaction);
+            trainModelBtn.addEventListener('click', trainModel);
+            downloadReportBtn.addEventListener('click', downloadReport);
+            logoutBtn.addEventListener('click', logout);
+            createUserBtn.addEventListener('click', createUser);
+            
+            // Set up periodic updates
+            setInterval(updatePendingTransactions, 10000);
+            setInterval(updateStats, 15000);
+        });
+
+        async function checkAuthentication() {
+            try {
+                const response = await fetch(`${AUTH_BASE_URL}/current_user`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    updateUIForUserRole();
+                    initializeApp();
+                } else {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login';
+            }
+        }
+
+        function updateUIForUserRole() {
+            document.getElementById('userWelcome').textContent = `Welcome, ${currentUser.username}`;
+            const roleBadge = document.getElementById('userRole');
+            roleBadge.textContent = currentUser.role.toUpperCase();
+            roleBadge.className = `user-badge ${currentUser.role}`;
+            
+            const adminPanel = document.getElementById('adminPanel');
+            if (currentUser.role === 'admin') {
+                adminPanel.style.display = 'block';
+                loadUsers();
+            } else {
+                adminPanel.style.display = 'none';
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${AUTH_BASE_URL}/users`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayUsers(data.users);
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function displayUsers(users) {
+            const usersBody = document.getElementById('usersBody');
+            usersBody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>
+                        <button class="status-toggle ${user.is_active ? '' : 'inactive'}" 
+                                onclick="toggleUserStatus(${user.id}, ${!user.is_active})">
+                            ${user.is_active ? 'Active' : 'Inactive'}
+                        </button>
+                    </td>
+                    <td>${user.created_by}</td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                `;
+                usersBody.appendChild(row);
+            });
+        }
+
+        async function toggleUserStatus(userId, isActive) {
+            try {
+                const response = await fetch(`${AUTH_BASE_URL}/user_status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: userId, is_active: isActive })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('User status updated successfully', 'success');
+                    loadUsers();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error updating user status:', error);
+                showNotification('Error updating user status', 'error');
+            }
+        }
+
+        async function createUser() {
+            const username = document.getElementById('newUsername').value;
+            const email = document.getElementById('newEmail').value;
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+            
+            if (!username || !email || !password) {
+                showNotification('Please fill all fields', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${AUTH_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password, role })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    document.getElementById('newUsername').value = '';
+                    document.getElementById('newEmail').value = '';
+                    document.getElementById('newPassword').value = '';
+                    loadUsers();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+                showNotification('Error creating user', 'error');
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch(`${AUTH_BASE_URL}/logout`, { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/login';
+            }
+        }
+
+        async function initializeApp() {
+            await updateStats();
+            await updatePendingTransactions();
+            await loadCheckedTransactions();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/model_status`);
+                const data = await response.json();
+                
+                if (!data.is_trained) {
+                    showNotification('Model needs training. Please train the model first.', 'warning');
+                }
+            } catch (error) {
+                console.error('Error checking model status:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        async function updateStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/system_stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('total-transactions').textContent = stats.total_checked;
+                    document.getElementById('safe-transactions').textContent = stats.safe_count;
+                    document.getElementById('fraud-transactions').textContent = stats.fraud_count;
+                    document.getElementById('pending-transactions').textContent = stats.pending_count;
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        async function updatePendingTransactions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/get_pending_transactions`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const pendingCountValue = data.count;
+                    document.getElementById('pending-count').textContent = pendingCountValue;
+                    
+                    if (pendingCountValue > 0) {
+                        document.getElementById('pending-section').style.display = 'block';
+                        const transactionList = data.transactions.map(t => t.transaction_id).join(', ');
+                        document.getElementById('pending-list').textContent = transactionList;
+                    } else {
+                        document.getElementById('pending-section').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating pending transactions:', error);
+            }
+        }
+
+        async function loadCheckedTransactions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/checked_transactions?limit=20`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayTransactions(data.transactions);
+                }
+            } catch (error) {
+                console.error('Error loading checked transactions:', error);
+            }
+        }
+
+        async function checkAllPendingTransactions() {
+            const checkTransactionBtn = document.getElementById('check-transaction');
+            checkTransactionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            checkTransactionBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/check_transactions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(`Checked ${data.checked_count} transactions for fraud`, 'success');
+                    displayLatestResult(data.transactions);
+                    await loadCheckedTransactions();
+                    await updateStats();
+                    await updatePendingTransactions();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error checking transactions:', error);
+                showNotification('Error checking transactions', 'error');
+            } finally {
+                checkTransactionBtn.innerHTML = '<i class="fas fa-search"></i> Check All Pending Transactions';
+                checkTransactionBtn.disabled = false;
+            }
+        }
+
+        async function generateRandomTransaction() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/generate_transaction`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(`Transaction ${data.transaction.transaction_id} generated`, 'success');
+                    await updatePendingTransactions();
+                    await updateStats();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error generating transaction:', error);
+                showNotification('Error generating transaction', 'error');
+            }
+        }
+
+        async function trainModel() {
+            const trainModelBtn = document.getElementById('train-model');
+            trainModelBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Training...';
+            trainModelBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/train_model`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    showNotification(`Model trained with ${data.results.total_samples} transactions. Accuracy: ${(data.results.test_accuracy * 100).toFixed(2)}%`, 'success');
+                    await generateRandomTransaction();
+                    await updatePendingTransactions();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error training model:', error);
+                showNotification('Error training model', 'error');
+            } finally {
+                trainModelBtn.innerHTML = '<i class="fas fa-brain"></i> Train Model';
+                trainModelBtn.disabled = false;
+            }
+        }
+
+        async function downloadReport() {
+            try {
+                window.location.href = `${API_BASE_URL}/download_report`;
+                showNotification('Report download started', 'success');
+            } catch (error) {
+                console.error('Error downloading report:', error);
+                showNotification('Error downloading report', 'error');
+            }
+        }
+
+        function displayTransactions(transactions) {
+            const transactionsBody = document.getElementById('transactions-body');
+            transactionsBody.innerHTML = '';
+            
+            transactions.forEach(transaction => {
+                const isFraud = transaction.is_fraud;
+                const statusClass = isFraud ? 'fraud-badge' : 'safe-badge';
+                const statusText = isFraud ? 'FRAUD' : 'SAFE';
+                
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${transaction.transaction_id}</td>
+                    <td>$${transaction.amount}</td>
+                    <td>${transaction.category}</td>
+                    <td>${transaction.location}</td>
+                    <td>${transaction.device_type}</td>
+                    <td>${transaction.fraud_probability ? transaction.fraud_probability.toFixed(3) : 'N/A'}</td>
+                    <td><span class="${statusClass}">${statusText}</span></td>
+                `;
+                
+                newRow.addEventListener('click', () => showTransactionDetails(transaction));
+                transactionsBody.appendChild(newRow);
+            });
+        }
+
+        function displayLatestResult(transactions) {
+            if (transactions && transactions.length > 0) {
+                const latestTransaction = transactions[0];
+                showTransactionDetails(latestTransaction);
+            }
+        }
+
+        function showTransactionDetails(transaction) {
+            document.getElementById('result-id').textContent = transaction.transaction_id;
+            document.getElementById('result-amount').textContent = `$${transaction.amount}`;
+            document.getElementById('result-category').textContent = transaction.category;
+            document.getElementById('result-location').textContent = transaction.location;
+            document.getElementById('result-device').textContent = transaction.device_type;
+            document.getElementById('result-probability').textContent = transaction.fraud_probability ? transaction.fraud_probability.toFixed(3) : 'N/A';
+            document.getElementById('result-confidence').textContent = transaction.confidence ? `${transaction.confidence.toFixed(1)}%` : 'N/A';
+            
+            const statusElement = document.getElementById('result-status');
+            const reasonElement = document.getElementById('result-reason');
+            
+            if (transaction.is_fraud) {
+                statusElement.textContent = 'FRAUD';
+                statusElement.className = 'fraud-badge';
+                reasonElement.className = 'fraud-reason';
+            } else {
+                statusElement.textContent = 'SAFE';
+                statusElement.className = 'safe-badge';
+                reasonElement.className = 'safe-reason';
+            }
+            
+            reasonElement.innerHTML = `<strong>Reason:</strong> ${transaction.reason || 'No specific reason provided'}`;
+            document.getElementById('transaction-result').style.display = 'block';
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (type === 'error') {
+                notification.classList.add('error');
+            } else if (type === 'warning') {
+                notification.classList.add('warning');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
