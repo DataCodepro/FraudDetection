@@ -831,7 +831,7 @@ if __name__ == '__main__':
         fraud_model.create_initial_fraud_transactions()
         
         print("Background transaction generation started (1-minute intervals)...")
-        print("System is ready! Access the application at http://localhost:5000")
+        print("System is ready!")
         print("Default login: admin/admin123 or analyst/user123")
             
     except Exception as e:
@@ -839,6 +839,7 @@ if __name__ == '__main__':
         print("Starting with untrained model. Please train manually via the interface.")
     
     try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        port = int(os.environ.get("PORT", 5000))  # <-- use Railway's port if available
+        app.run(debug=True, host='0.0.0.0', port=port)
     finally:
         stop_background_thread()
